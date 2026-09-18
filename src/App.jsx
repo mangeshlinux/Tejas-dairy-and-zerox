@@ -9,6 +9,7 @@ import { SHOP_INFO } from './data/defaultData';
 import LoadingScreen from './components/LoadingScreen';
 import ThemeDecorations from './components/ThemeDecorations';
 import Footer from './components/Footer';
+import { saveSlides, loadSlides } from './utils/db';
 
 /* Default slides — used if nothing is saved in localStorage */
 const DEFAULT_SLIDES = [
@@ -46,32 +47,33 @@ export default function App() {
     localStorage.setItem('tejesh_sparkle_density', sparkleDensity);
   }, [sparkleDensity]);
 
-  /* Carousel slides — load from localStorage or use defaults */
-  const [slides, setSlides] = useState(() => {
-    try {
-      const saved = localStorage.getItem('tejesh_offer_slides');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.map((s) => ({
+  /* Carousel slides — start with defaults, then load from IndexedDB on mount */
+  const [slides, setSlides] = useState(DEFAULT_SLIDES);
+  const [slidesReady, setSlidesReady] = useState(false);
+
+  /* Load slides from IndexedDB on first mount */
+  useEffect(() => {
+    loadSlides().then((saved) => {
+      if (Array.isArray(saved) && saved.length > 0) {
+        setSlides(
+          saved.map((s) => ({
             ...s,
             image: s.image || s.media || '',
             media: s.media || s.image || '',
             mediaType: s.mediaType || (s.image && typeof s.image === 'string' && s.image.endsWith('.mp4') ? 'video' : 'image'),
             active: s.active !== false,
-          }));
-        }
+          }))
+        );
       }
-    } catch (e) {
-      console.error('Error loading slides from localStorage', e);
-    }
-    return DEFAULT_SLIDES;
-  });
+      setSlidesReady(true);
+    });
+  }, []);
 
-  /* Persist slides to localStorage on change */
+  /* Persist slides to IndexedDB whenever they change (after initial load) */
   useEffect(() => {
-    localStorage.setItem('tejesh_offer_slides', JSON.stringify(slides));
-  }, [slides]);
+    if (!slidesReady) return; // don't overwrite DB with defaults before load finishes
+    saveSlides(slides);
+  }, [slides, slidesReady]);
 
   /* Loading timer */
   useEffect(() => {

@@ -35,15 +35,7 @@ export default function Footer({ onOpenOperator }) {
                 <div className="text-xs text-slate-500 font-bold uppercase tracking-wider">Address & Contact</div>
                 <div className="text-sm text-slate-900 font-medium">{SHOP_INFO.nameEn}</div>
                 <div className="text-sm text-slate-700 font-mono">Mob: {SHOP_INFO.phonePrimary}</div>
-                <a
-                  href={SHOP_INFO.mapUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 mt-1.5 px-3 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300/80 rounded-lg text-xs font-bold transition-colors shadow-sm"
-                >
-                  <MapPin className="w-3.5 h-3.5 text-amber-600" />
-                  <span>Open in Google Maps ↗</span>
-                </a>
+
               </div>
             </div>
 
@@ -96,14 +88,22 @@ export default function Footer({ onOpenOperator }) {
         </div>
       </div>
 
-      {/* Operator access — tiny subtle button */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 pt-4 border-t border-slate-100 flex justify-center">
+      {/* Bottom bar — Operator Login + Developer Credit */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
         <button
           onClick={onOpenOperator}
           className="text-xs text-slate-300 hover:text-amber-500 transition-colors tracking-wider uppercase"
         >
           Operator Login
         </button>
+        <a
+          href="https://www.instagram.com/mangesh.l_0081?stkn=cXg3N2Y5b2xtZnc5"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs text-slate-300 hover:text-pink-500 transition-colors"
+        >
+          Developed by <span className="font-bold">@mangesh.l_0081</span> ↗
+        </a>
       </div>
     </footer>
   );

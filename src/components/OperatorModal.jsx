@@ -145,7 +145,7 @@ export default function OperatorModal({
 
   const handleToggleSlideActive = (index) => {
     const updated = [...slides];
-    updated[index] = { ...updated[index], active: updated[index].active === false };
+    updated[index] = { ...updated[index], active: updated[index].active !== false ? false : true };
     setSlides(updated);
   };
 
