@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { saveCloudSlides, saveCloudSettings } from '../utils/cloudStorage';
 
 /* ============================================================
    OPERATOR PORTAL MODAL
@@ -8,7 +9,7 @@ import React, { useState, useRef } from 'react';
      - PIN gate (0081)
      - Manage Billboard Slides (Media upload, Badge styles, Active toggle)
      - Website theme & sparkles density switcher
-     - Data persists in localStorage
+     - Data syncs to Firebase in real-time across all devices
    ============================================================ */
 
 const OPERATOR_PIN = '0081';
@@ -21,11 +22,11 @@ const THEMES = [
 
 /* Badge color styles options */
 const BADGE_STYLES = [
-  { id: 'gold', name: '✨ Gold Sparkle', class: 'bg-amber-500 text-white' },
-  { id: 'red', name: '🔥 Hot Red', class: 'bg-red-600 text-white' },
-  { id: 'emerald', name: '🌿 Fresh Emerald', class: 'bg-emerald-600 text-white' },
-  { id: 'cyan', name: '⚡ Electric Cyan', class: 'bg-cyan-600 text-white' },
-  { id: 'purple', name: '🎁 Bonus Purple', class: 'bg-purple-600 text-white' },
+  { id: 'gold',    name: '✨ Gold Sparkle'   },
+  { id: 'red',     name: '🔥 Hot Red'         },
+  { id: 'emerald', name: '🌿 Fresh Emerald'   },
+  { id: 'cyan',    name: '⚡ Electric Cyan'  },
+  { id: 'purple',  name: '🎁 Bonus Purple'   },
 ];
 
 export default function OperatorModal({
@@ -41,19 +42,25 @@ export default function OperatorModal({
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [pin, setPin] = useState('');
   const [pinError, setPinError] = useState('');
-  const [activeTab, setActiveTab] = useState('slides'); // 'slides' | 'theme'
+  const [activeTab, setActiveTab] = useState('slides');
+
+  /* Cloud sync status: '' | 'saving' | 'saved' | 'error' */
+  const [syncStatus, setSyncStatus] = useState('');
 
   /* --- SLIDES FORM STATE --- */
   const [editingSlideIndex, setEditingSlideIndex] = useState(null);
   const [slideForm, setSlideForm] = useState({
     media: '',
     mediaType: 'image',
+    mediaMobile: '',
+    mediaMobileType: 'image',
     title: '',
     badge: '',
     badgeStyle: 'gold',
     active: true,
   });
   const slideFileInputRef = useRef(null);
+  const slideFileMobileInputRef = useRef(null);
 
   if (!isOpen) return null;
 
@@ -73,9 +80,34 @@ export default function OperatorModal({
     setIsAuthenticated(false);
     setPin('');
     setPinError('');
+    setSyncStatus('');
     setEditingSlideIndex(null);
-    setSlideForm({ media: '', mediaType: 'image', title: '', badge: '', badgeStyle: 'gold', active: true });
+    setSlideForm({ media: '', mediaType: 'image', mediaMobile: '', mediaMobileType: 'image', title: '', badge: '', badgeStyle: 'gold', active: true });
     onClose();
+  };
+
+  /* ---- Cloud sync helper ---- */
+  const syncSlidesToCloud = async (updatedSlides) => {
+    setSyncStatus('saving');
+    try {
+      const saved = await saveCloudSlides(updatedSlides);
+      /* Update local state with cloud-processed (compressed) slides */
+      setSlides(saved);
+      setSyncStatus('saved');
+      setTimeout(() => setSyncStatus(''), 2500);
+    } catch (err) {
+      console.error('[operator] cloud save failed:', err);
+      setSyncStatus('error');
+      setTimeout(() => setSyncStatus(''), 4000);
+    }
+  };
+
+  const syncSettingsToCloud = async (newTheme, newDensity) => {
+    try {
+      await saveCloudSettings(newTheme, newDensity);
+    } catch (err) {
+      console.error('[operator] settings save failed:', err);
+    }
   };
 
   /* ==================== SLIDES HANDLERS ==================== */
@@ -89,7 +121,22 @@ export default function OperatorModal({
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      setSlideForm({ ...slideForm, media: reader.result, mediaType: isVideo ? 'video' : 'image' });
+      setSlideForm((prev) => ({ ...prev, media: reader.result, mediaType: isVideo ? 'video' : 'image' }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSlideMobileFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const isVideo = file.type.startsWith('video/');
+    const isImage = file.type.startsWith('image/');
+    if (!isVideo && !isImage) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setSlideForm((prev) => ({ ...prev, mediaMobile: reader.result, mediaMobileType: isVideo ? 'video' : 'image' }));
     };
     reader.readAsDataURL(file);
   };
@@ -101,8 +148,10 @@ export default function OperatorModal({
       { ...slideForm, image: slideForm.media },
     ];
     setSlides(updated);
-    setSlideForm({ media: '', mediaType: 'image', title: '', badge: '', badgeStyle: 'gold', active: true });
+    setSlideForm({ media: '', mediaType: 'image', mediaMobile: '', mediaMobileType: 'image', title: '', badge: '', badgeStyle: 'gold', active: true });
     if (slideFileInputRef.current) slideFileInputRef.current.value = '';
+    if (slideFileMobileInputRef.current) slideFileMobileInputRef.current.value = '';
+    syncSlidesToCloud(updated);
   };
 
   const handleEditSlide = (index) => {
@@ -111,6 +160,8 @@ export default function OperatorModal({
     setSlideForm({
       media: s.media || s.image || '',
       mediaType: s.mediaType || 'image',
+      mediaMobile: s.mediaMobile || '',
+      mediaMobileType: s.mediaMobileType || 'image',
       title: s.title || '',
       badge: s.badge || '',
       badgeStyle: s.badgeStyle || 'gold',
@@ -127,26 +178,31 @@ export default function OperatorModal({
     };
     setSlides(updated);
     setEditingSlideIndex(null);
-    setSlideForm({ media: '', mediaType: 'image', title: '', badge: '', badgeStyle: 'gold', active: true });
+    setSlideForm({ media: '', mediaType: 'image', mediaMobile: '', mediaMobileType: 'image', title: '', badge: '', badgeStyle: 'gold', active: true });
     if (slideFileInputRef.current) slideFileInputRef.current.value = '';
+    if (slideFileMobileInputRef.current) slideFileMobileInputRef.current.value = '';
+    syncSlidesToCloud(updated);
   };
 
   const handleCancelSlide = () => {
     setEditingSlideIndex(null);
-    setSlideForm({ media: '', mediaType: 'image', title: '', badge: '', badgeStyle: 'gold', active: true });
+    setSlideForm({ media: '', mediaType: 'image', mediaMobile: '', mediaMobileType: 'image', title: '', badge: '', badgeStyle: 'gold', active: true });
     if (slideFileInputRef.current) slideFileInputRef.current.value = '';
+    if (slideFileMobileInputRef.current) slideFileMobileInputRef.current.value = '';
   };
 
   const handleDeleteSlide = (index) => {
     const updated = slides.filter((_, i) => i !== index);
     setSlides(updated);
     if (editingSlideIndex === index) handleCancelSlide();
+    syncSlidesToCloud(updated);
   };
 
   const handleToggleSlideActive = (index) => {
     const updated = [...slides];
     updated[index] = { ...updated[index], active: updated[index].active !== false ? false : true };
     setSlides(updated);
+    syncSlidesToCloud(updated);
   };
 
   const handleMoveSlide = (index, direction) => {
@@ -155,6 +211,7 @@ export default function OperatorModal({
     const updated = [...slides];
     [updated[index], updated[newIndex]] = [updated[newIndex], updated[index]];
     setSlides(updated);
+    syncSlidesToCloud(updated);
   };
 
   const getMediaSrc = (slide) => slide.media || slide.image || '';
@@ -167,9 +224,21 @@ export default function OperatorModal({
         {/* Header */}
         <div className="operator-header">
           <h2>🔧 Operator Portal</h2>
-          <button onClick={handleClose} className="operator-close" aria-label="Close">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Cloud sync status indicator */}
+            {syncStatus === 'saving' && (
+              <span className="text-xs text-amber-600 font-semibold animate-pulse">☁️ Syncing...</span>
+            )}
+            {syncStatus === 'saved' && (
+              <span className="text-xs text-emerald-600 font-semibold">✅ Synced</span>
+            )}
+            {syncStatus === 'error' && (
+              <span className="text-xs text-red-500 font-semibold">❌ Sync failed</span>
+            )}
+            <button onClick={handleClose} className="operator-close" aria-label="Close">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+            </button>
+          </div>
         </div>
 
         {/* PIN Gate */}
@@ -231,6 +300,7 @@ export default function OperatorModal({
                             <span>{getMediaType(slide) === 'video' ? '🎬' : '🖼️'}</span>
                             <span className="font-bold">{slide.title}</span>
                             {slide.active === false && <span className="text-xs bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-mono">(Paused)</span>}
+                            {slide.mediaMobile && <span className="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-mono">📱 Mobile</span>}
                           </div>
                           {slide.badge && (
                             <div className="text-xs text-amber-700 font-semibold mt-0.5">
@@ -257,9 +327,9 @@ export default function OperatorModal({
                   <h3>{editingSlideIndex !== null ? `Edit Banner #${editingSlideIndex + 1}` : 'Add New Billboard Advertisement Banner'}</h3>
                   <div className="operator-form space-y-4">
 
-                    {/* File upload */}
+                    {/* Desktop Banner upload */}
                     <div className="operator-field">
-                      <label>Upload Banner Image or Video</label>
+                      <label>🖥️ Desktop Banner (wide / landscape)</label>
                       <input
                         ref={slideFileInputRef}
                         type="file"
@@ -272,9 +342,32 @@ export default function OperatorModal({
                           {slideForm.mediaType === 'video' ? (
                             <video src={slideForm.media} controls muted className="operator-media-thumb" />
                           ) : (
-                            <img src={slideForm.media} alt="uploaded" className="operator-media-thumb" />
+                            <img src={slideForm.media} alt="uploaded desktop" className="operator-media-thumb" />
                           )}
-                          <button onClick={() => setSlideForm({ ...slideForm, media: '', mediaType: 'image' })} className="operator-media-remove" title="Remove">✕</button>
+                          <button onClick={() => setSlideForm((prev) => ({ ...prev, media: '', mediaType: 'image' }))} className="operator-media-remove" title="Remove">✕</button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Mobile Banner upload */}
+                    <div className="operator-field">
+                      <label>📱 Mobile Banner <span className="font-normal normal-case text-slate-400">(optional – portrait / square)</span></label>
+                      <p className="text-xs text-slate-400 mb-1">If left empty, the desktop banner is used on mobile too.</p>
+                      <input
+                        ref={slideFileMobileInputRef}
+                        type="file"
+                        accept="image/*,video/*"
+                        onChange={handleSlideMobileFileUpload}
+                        className="operator-file-input"
+                      />
+                      {slideForm.mediaMobile && (
+                        <div className="operator-media-preview mt-2">
+                          {slideForm.mediaMobileType === 'video' ? (
+                            <video src={slideForm.mediaMobile} controls muted className="operator-media-thumb" />
+                          ) : (
+                            <img src={slideForm.mediaMobile} alt="uploaded mobile" className="operator-media-thumb" />
+                          )}
+                          <button onClick={() => setSlideForm((prev) => ({ ...prev, mediaMobile: '', mediaMobileType: 'image' }))} className="operator-media-remove" title="Remove">✕</button>
                         </div>
                       )}
                     </div>
@@ -339,7 +432,10 @@ export default function OperatorModal({
                     <button
                       key={t.id}
                       className={`operator-theme-card ${theme === t.id ? 'active' : ''}`}
-                      onClick={() => setTheme(t.id)}
+                      onClick={() => {
+                        setTheme(t.id);
+                        syncSettingsToCloud(t.id, sparkleDensity);
+                      }}
                     >
                       <div className="operator-theme-name">{t.name}</div>
                       <div className="operator-theme-desc">{t.desc}</div>

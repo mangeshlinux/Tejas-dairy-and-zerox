@@ -19,14 +19,14 @@ export default function Hero({ lang }) {
   }, []);
 
   return (
-    <section className="relative overflow-hidden py-10 sm:py-14 px-4 bg-transparent">
-      <div className="w-full relative z-10 px-4 sm:px-8 lg:px-12 flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+    <section className="relative overflow-hidden py-6 sm:py-10 sm:py-14 px-4 bg-transparent">
+      <div className="w-full relative z-10 px-3 sm:px-8 lg:px-12 flex flex-col lg:flex-row items-center gap-6 sm:gap-8 lg:gap-12">
 
         {/* Left — Text content */}
         <div className="flex-1 text-left space-y-6 min-w-0">
           <div className="space-y-4 transform transition-all hover:scale-[1.02] duration-500 origin-left">
             {/* English heading */}
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black font-display tracking-tight leading-tight">
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black font-display tracking-tight leading-tight">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900">
                 Tejesh{' '}
               </span>
@@ -42,7 +42,7 @@ export default function Hero({ lang }) {
             </h2>
 
             {/* Marathi heading */}
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black font-marathi tracking-tight leading-tight">
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black font-marathi tracking-tight leading-tight">
               <span className="text-slate-800">तेजेश </span>
               <span className="hero-word-wrapper hero-word-wrapper--mr">
                 <span
@@ -66,7 +66,7 @@ export default function Hero({ lang }) {
         </div>
 
         {/* Right — Shop image */}
-        <div className="hero-image-wrapper flex-shrink-0 w-full lg:w-[420px]">
+        <div className="hero-image-wrapper flex-shrink-0 w-full lg:w-[420px] max-h-[260px] sm:max-h-none overflow-hidden">
           <div className="hero-image-frame">
             <img
               src="/shop_photo_1.png"

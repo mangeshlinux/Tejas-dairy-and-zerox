@@ -3,12 +3,29 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 /* Auto-rotation interval in milliseconds */
 const AUTO_PLAY_INTERVAL = 4500;
 
+/* Hook: returns true when screen width is ≤ 640px (mobile) */
+function useMobileView() {
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 640px)').matches
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 640px)');
+    const handler = (e) => setIsMobile(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
+  return isMobile;
+}
+
 export default function OfferCarousel({ slides = [] }) {
   const [current, setCurrent] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [direction, setDirection] = useState('next');
   const [isAnimating, setIsAnimating] = useState(false);
   const timerRef = useRef(null);
+  const isMobile = useMobileView();
 
   /* Filter only active slides */
   const activeSlides = slides.filter((s) => s.active !== false);
@@ -85,10 +102,6 @@ export default function OfferCarousel({ slides = [] }) {
         <div className="carousel-viewport">
           {activeSlides.map((slide, i) => {
             const mediaSrc = slide.media || slide.image || '';
-            const isVideo =
-              slide.mediaType === 'video' ||
-              (typeof mediaSrc === 'string' &&
-                (mediaSrc.startsWith('data:video') || mediaSrc.match(/\.(mp4|webm|ogg)$/i)));
 
             return (
               <div
@@ -98,24 +111,36 @@ export default function OfferCarousel({ slides = [] }) {
                 }`}
                 aria-hidden={i !== current}
               >
-                {/* Media background (Image or Video) */}
-                {isVideo ? (
-                  <video
-                    src={mediaSrc}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="carousel-slide-img"
-                  />
-                ) : (
-                  <img
-                    src={mediaSrc}
-                    alt={slide.title}
-                    className="carousel-slide-img"
-                    loading={i === 0 ? 'eager' : 'lazy'}
-                  />
-                )}
+                {/* Media background (Image or Video) — picks mobile variant when available */}
+                {(() => {
+                  const useMobileSrc = isMobile && !!slide.mediaMobile;
+                  const src = useMobileSrc ? slide.mediaMobile : mediaSrc;
+                  const type = useMobileSrc ? (slide.mediaMobileType || 'image') : (slide.mediaType || 'image');
+                  const isVid =
+                    type === 'video' ||
+                    (typeof src === 'string' &&
+                      (src.startsWith('data:video') || src.match(/\.(mp4|webm|ogg)$/i)));
+
+                  return isVid ? (
+                    <video
+                      key={src}
+                      src={src}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="carousel-slide-img"
+                    />
+                  ) : (
+                    <img
+                      key={src}
+                      src={src}
+                      alt={slide.title}
+                      className="carousel-slide-img"
+                      loading={i === 0 ? 'eager' : 'lazy'}
+                    />
+                  );
+                })()}
 
                 {/* Gradient dark overlay */}
                 <div className="carousel-overlay bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
@@ -145,7 +170,7 @@ export default function OfferCarousel({ slides = [] }) {
             <button className="carousel-arrow carousel-arrow--left" onClick={prev} aria-label="Previous slide">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
             </button>
-            <button className="carousel-arrow carousel-arrow--right" onClick={next} aria-label="Previous slide">
+            <button className="carousel-arrow carousel-arrow--right" onClick={next} aria-label="Next slide">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 6 15 12 9 18" /></svg>
             </button>
           </>
