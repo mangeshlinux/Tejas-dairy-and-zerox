@@ -11,14 +11,14 @@ A bilingual (English + Marathi) business website for **Tejesh Xerox, Milk & Ice 
 ### Home
 ![Home page](screenshots/home.png)
 
-### Offers Banner
-![Offers banner](screenshots/offers.png)
+### Banner
+![Banner](screenshots/offers.png)
 
-### Featured Products
-![Featured products](screenshots/products.png)
+### Products
+![Products](screenshots/products.png)
 
-### Official Brand Partners
-![Brand partners](screenshots/brands.png)
+### Features
+![Features](screenshots/brands.png)
 
 ---
 
