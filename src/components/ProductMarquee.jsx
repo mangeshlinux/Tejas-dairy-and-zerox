@@ -78,32 +78,32 @@ export default function ProductMarquee({ lang = 'en' }) {
         </div>
 
         {/* Marquee Wrapper - Seamlessly merged into page background */}
-        <div className="relative w-full overflow-hidden group py-2">
+        <div className="relative w-full overflow-hidden group py-3">
           {/* Left edge fade matching page background */}
-          <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-[#FFF9F0] to-transparent z-10 pointer-events-none" />
+          <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-r from-[#FFF9F0] to-transparent z-10 pointer-events-none" />
           
           {/* Right edge fade matching page background */}
-          <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-[#FFF9F0] to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-l from-[#FFF9F0] to-transparent z-10 pointer-events-none" />
 
           {/* Marquee track moving right-to-left */}
-          <div className="flex items-center gap-5 sm:gap-8 animate-marquee-rtl group-hover:[animation-play-state:paused] w-max py-1">
+          <div className="flex items-center gap-8 sm:gap-12 animate-marquee-rtl group-hover:[animation-play-state:paused] w-max py-2">
             {marqueeItems.map((item, idx) => (
               <div
                 key={`${item.id}-${idx}`}
-                className="flex flex-col items-center shrink-0 p-2.5 rounded-2xl transition-all duration-300 hover:-translate-y-1 w-[150px] sm:w-[175px] cursor-default group/card"
+                className="flex flex-col items-center shrink-0 p-4 rounded-3xl transition-all duration-300 hover:-translate-y-3 w-[190px] sm:w-[230px] cursor-default group/card"
               >
                 {/* Product Image Container */}
-                <div className="w-full h-28 sm:h-32 flex items-center justify-center p-2 rounded-xl bg-white/70 border border-amber-200/40 shadow-xs group-hover/card:shadow-md group-hover/card:border-amber-300 transition-all duration-300 mb-2">
+                <div className="w-full h-40 sm:h-48 flex items-center justify-center p-4 rounded-2xl bg-white/90 border border-amber-200/60 shadow-sm group-hover/card:shadow-2xl group-hover/card:shadow-amber-200/50 group-hover/card:border-amber-400 transition-all duration-300 mb-3">
                   <img
                     src={item.image}
                     alt={item.name}
-                    className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover/card:scale-105"
+                    className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover/card:scale-110"
                     loading="lazy"
                   />
                 </div>
 
                 {/* Product Name Only */}
-                <h3 className="text-xs sm:text-sm font-bold text-slate-900 text-center leading-tight line-clamp-1 group-hover/card:text-amber-600 transition-colors">
+                <h3 className="text-sm sm:text-base font-bold text-slate-900 text-center leading-tight line-clamp-2 group-hover/card:text-amber-600 transition-colors">
                   {item.name}
                 </h3>
               </div>

@@ -348,22 +348,6 @@ export default function OperatorModal({
                   ))}
                 </div>
 
-                <div className="pt-4 border-t border-slate-200">
-                  <label className="font-bold text-sm text-slate-800 block mb-1">Sparkle & Petals Density</label>
-                  <div className="flex gap-3">
-                    {['low', 'medium', 'high'].map((d) => (
-                      <button
-                        key={d}
-                        onClick={() => setSparkleDensity(d)}
-                        className={`px-4 py-2 rounded-xl text-xs font-bold capitalize transition-all ${
-                          sparkleDensity === d ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                        }`}
-                      >
-                        {d} Density
-                      </button>
-                    ))}
-                  </div>
-                </div>
               </div>
             )}
 

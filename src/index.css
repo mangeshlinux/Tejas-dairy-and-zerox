@@ -250,7 +250,8 @@
 /* ---- Automatic Right-to-Left Product Marquee ---- */
 .animate-marquee-rtl {
   display: flex;
-  animation: marqueeRtl 22s linear infinite;
+  animation: marqueeRtl 35s linear infinite;
+  will-change: transform;
 }
 
 @keyframes marqueeRtl {
