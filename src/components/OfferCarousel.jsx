@@ -34,12 +34,16 @@ export default function OfferCarousel({ slides = [] }) {
   const next = useCallback(() => goTo(current + 1, 'next'), [current, goTo]);
   const prev = useCallback(() => goTo(current - 1, 'prev'), [current, goTo]);
 
-  /* Auto-rotation timer */
+  /* Stable ref so the interval always calls the latest `next` without restarting */
+  const nextRef = useRef(null);
+  nextRef.current = next;
+
+  /* Auto-rotation timer — only resets when paused or slide count changes */
   useEffect(() => {
     if (isPaused || total <= 1) return;
-    timerRef.current = setInterval(next, AUTO_PLAY_INTERVAL);
+    timerRef.current = setInterval(() => nextRef.current(), AUTO_PLAY_INTERVAL);
     return () => clearInterval(timerRef.current);
-  }, [isPaused, next, total]);
+  }, [isPaused, total]);
 
   if (total === 0) {
     return (
