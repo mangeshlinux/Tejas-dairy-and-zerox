@@ -3,12 +3,11 @@ import React, { useState, useRef } from 'react';
 /* ============================================================
    OPERATOR PORTAL MODAL
    ============================================================
-   Admin panel to manage carousel slides and website theme.
+   Admin panel to manage advertisement banners and website theme.
    Features:
      - PIN gate (0081)
-     - Upload images & videos for slides
-     - Add / Edit / Delete / Reorder slides
-     - Website theme switcher
+     - Manage Billboard Slides (Media upload, Badge styles, Active toggle)
+     - Website theme & sparkles density switcher
      - Data persists in localStorage
    ============================================================ */
 
@@ -20,14 +19,41 @@ const THEMES = [
   { id: 'festival', name: '🌸 Festival', desc: 'Hanging flowers & diyas with falling petals' },
 ];
 
-export default function OperatorModal({ isOpen, onClose, slides, setSlides, theme, setTheme, sparkleDensity = 'medium', setSparkleDensity }) {
+/* Badge color styles options */
+const BADGE_STYLES = [
+  { id: 'gold', name: '✨ Gold Sparkle', class: 'bg-amber-500 text-white' },
+  { id: 'red', name: '🔥 Hot Red', class: 'bg-red-600 text-white' },
+  { id: 'emerald', name: '🌿 Fresh Emerald', class: 'bg-emerald-600 text-white' },
+  { id: 'cyan', name: '⚡ Electric Cyan', class: 'bg-cyan-600 text-white' },
+  { id: 'purple', name: '🎁 Bonus Purple', class: 'bg-purple-600 text-white' },
+];
+
+export default function OperatorModal({
+  isOpen,
+  onClose,
+  slides = [],
+  setSlides,
+  theme,
+  setTheme,
+  sparkleDensity = 'medium',
+  setSparkleDensity,
+}) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [pin, setPin] = useState('');
   const [pinError, setPinError] = useState('');
-  const [editingIndex, setEditingIndex] = useState(null);
-  const [form, setForm] = useState({ media: '', mediaType: 'image', title: '', badge: '' });
-  const [activeTab, setActiveTab] = useState('slides'); // 'slides' or 'theme'
-  const fileInputRef = useRef(null);
+  const [activeTab, setActiveTab] = useState('slides'); // 'slides' | 'theme'
+
+  /* --- SLIDES FORM STATE --- */
+  const [editingSlideIndex, setEditingSlideIndex] = useState(null);
+  const [slideForm, setSlideForm] = useState({
+    media: '',
+    mediaType: 'image',
+    title: '',
+    badge: '',
+    badgeStyle: 'gold',
+    active: true,
+  });
+  const slideFileInputRef = useRef(null);
 
   if (!isOpen) return null;
 
@@ -47,13 +73,13 @@ export default function OperatorModal({ isOpen, onClose, slides, setSlides, them
     setIsAuthenticated(false);
     setPin('');
     setPinError('');
-    setEditingIndex(null);
-    setForm({ media: '', mediaType: 'image', title: '', badge: '' });
+    setEditingSlideIndex(null);
+    setSlideForm({ media: '', mediaType: 'image', title: '', badge: '', badgeStyle: 'gold', active: true });
     onClose();
   };
 
-  /* Handle file upload (image or video) */
-  const handleFileUpload = (e) => {
+  /* ==================== SLIDES HANDLERS ==================== */
+  const handleSlideFileUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -63,68 +89,67 @@ export default function OperatorModal({ isOpen, onClose, slides, setSlides, them
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      setForm({ ...form, media: reader.result, mediaType: isVideo ? 'video' : 'image' });
+      setSlideForm({ ...slideForm, media: reader.result, mediaType: isVideo ? 'video' : 'image' });
     };
     reader.readAsDataURL(file);
   };
 
-  /* Add a new slide */
-  const handleAdd = () => {
-    if (!form.title.trim()) return;
+  const handleAddSlide = () => {
+    if (!slideForm.title.trim()) return;
     const updated = [
       ...slides,
-      { media: form.media, image: form.media, mediaType: form.mediaType, title: form.title, badge: form.badge },
+      { ...slideForm, image: slideForm.media },
     ];
     setSlides(updated);
-    setForm({ media: '', mediaType: 'image', title: '', badge: '' });
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    setSlideForm({ media: '', mediaType: 'image', title: '', badge: '', badgeStyle: 'gold', active: true });
+    if (slideFileInputRef.current) slideFileInputRef.current.value = '';
   };
 
-  /* Start editing a slide */
-  const handleEdit = (index) => {
-    setEditingIndex(index);
+  const handleEditSlide = (index) => {
+    setEditingSlideIndex(index);
     const s = slides[index];
-    setForm({
+    setSlideForm({
       media: s.media || s.image || '',
       mediaType: s.mediaType || 'image',
       title: s.title || '',
       badge: s.badge || '',
+      badgeStyle: s.badgeStyle || 'gold',
+      active: s.active !== false,
     });
   };
 
-  /* Save edits */
-  const handleSave = () => {
-    if (editingIndex === null) return;
+  const handleSaveSlide = () => {
+    if (editingSlideIndex === null) return;
     const updated = [...slides];
-    updated[editingIndex] = {
-      media: form.media,
-      image: form.media,
-      mediaType: form.mediaType,
-      title: form.title,
-      badge: form.badge,
+    updated[editingSlideIndex] = {
+      ...slideForm,
+      image: slideForm.media,
     };
     setSlides(updated);
-    setEditingIndex(null);
-    setForm({ media: '', mediaType: 'image', title: '', badge: '' });
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    setEditingSlideIndex(null);
+    setSlideForm({ media: '', mediaType: 'image', title: '', badge: '', badgeStyle: 'gold', active: true });
+    if (slideFileInputRef.current) slideFileInputRef.current.value = '';
   };
 
-  /* Cancel editing */
-  const handleCancel = () => {
-    setEditingIndex(null);
-    setForm({ media: '', mediaType: 'image', title: '', badge: '' });
-    if (fileInputRef.current) fileInputRef.current.value = '';
+  const handleCancelSlide = () => {
+    setEditingSlideIndex(null);
+    setSlideForm({ media: '', mediaType: 'image', title: '', badge: '', badgeStyle: 'gold', active: true });
+    if (slideFileInputRef.current) slideFileInputRef.current.value = '';
   };
 
-  /* Delete a slide */
-  const handleDelete = (index) => {
+  const handleDeleteSlide = (index) => {
     const updated = slides.filter((_, i) => i !== index);
     setSlides(updated);
-    if (editingIndex === index) handleCancel();
+    if (editingSlideIndex === index) handleCancelSlide();
   };
 
-  /* Move slide up/down */
-  const handleMove = (index, direction) => {
+  const handleToggleSlideActive = (index) => {
+    const updated = [...slides];
+    updated[index] = { ...updated[index], active: updated[index].active === false };
+    setSlides(updated);
+  };
+
+  const handleMoveSlide = (index, direction) => {
     const newIndex = index + direction;
     if (newIndex < 0 || newIndex >= slides.length) return;
     const updated = [...slides];
@@ -132,19 +157,13 @@ export default function OperatorModal({ isOpen, onClose, slides, setSlides, them
     setSlides(updated);
   };
 
-  /* Remove current media from form */
-  const handleRemoveMedia = () => {
-    setForm({ ...form, media: '', mediaType: 'image' });
-    if (fileInputRef.current) fileInputRef.current.value = '';
-  };
-
-  /* Get display media src — supports both old (image) and new (media) format */
   const getMediaSrc = (slide) => slide.media || slide.image || '';
   const getMediaType = (slide) => slide.mediaType || 'image';
 
   return (
     <div className="operator-backdrop" onClick={handleClose}>
       <div className="operator-modal" onClick={(e) => e.stopPropagation()}>
+        
         {/* Header */}
         <div className="operator-header">
           <h2>🔧 Operator Portal</h2>
@@ -157,7 +176,7 @@ export default function OperatorModal({ isOpen, onClose, slides, setSlides, them
         {!isAuthenticated ? (
           <form onSubmit={handlePinSubmit} className="operator-pin-form">
             <div className="operator-pin-icon">🔒</div>
-            <p className="operator-pin-label">Enter Operator PIN</p>
+            <p className="operator-pin-label">Enter Operator Security PIN</p>
             <input
               type="password"
               maxLength={6}
@@ -168,7 +187,7 @@ export default function OperatorModal({ isOpen, onClose, slides, setSlides, them
               autoFocus
             />
             {pinError && <p className="operator-pin-error">{pinError}</p>}
-            <button type="submit" className="operator-pin-btn">Unlock</button>
+            <button type="submit" className="operator-pin-btn">Unlock Admin Panel</button>
           </form>
         ) : (
           /* Dashboard */
@@ -177,7 +196,7 @@ export default function OperatorModal({ isOpen, onClose, slides, setSlides, them
             {/* Tab switcher */}
             <div className="operator-tabs">
               <button className={`operator-tab ${activeTab === 'slides' ? 'active' : ''}`} onClick={() => setActiveTab('slides')}>
-                📢 Advertisements
+                📢 Advertisements ({slides.length})
               </button>
               <button className={`operator-tab ${activeTab === 'theme' ? 'active' : ''}`} onClick={() => setActiveTab('theme')}>
                 🎨 Website Theme
@@ -189,13 +208,13 @@ export default function OperatorModal({ isOpen, onClose, slides, setSlides, them
               <>
                 {/* Slide list */}
                 <div className="operator-section">
-                  <h3>Current Slides ({slides.length})</h3>
+                  <h3>Current Advertisements & Billboard Banners</h3>
                   {slides.length === 0 && (
-                    <p className="operator-empty">No slides yet. Add one below.</p>
+                    <p className="operator-empty">No slides added yet. Create one below.</p>
                   )}
                   <div className="operator-slide-list">
                     {slides.map((slide, i) => (
-                      <div key={i} className={`operator-slide-item ${editingIndex === i ? 'editing' : ''}`}>
+                      <div key={i} className={`operator-slide-item ${editingSlideIndex === i ? 'editing' : ''} ${slide.active === false ? 'opacity-50' : ''}`}>
                         <div className="operator-slide-thumb">
                           {getMediaSrc(slide) ? (
                             getMediaType(slide) === 'video' ? (
@@ -208,17 +227,25 @@ export default function OperatorModal({ isOpen, onClose, slides, setSlides, them
                           )}
                         </div>
                         <div className="operator-slide-info">
-                          <div className="operator-slide-title">
-                            {getMediaType(slide) === 'video' ? '🎬 ' : '🖼️ '}
-                            {slide.title}
+                          <div className="operator-slide-title flex items-center gap-2">
+                            <span>{getMediaType(slide) === 'video' ? '🎬' : '🖼️'}</span>
+                            <span className="font-bold">{slide.title}</span>
+                            {slide.active === false && <span className="text-xs bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-mono">(Paused)</span>}
                           </div>
-
+                          {slide.badge && (
+                            <div className="text-xs text-amber-700 font-semibold mt-0.5">
+                              Badge: {slide.badge}
+                            </div>
+                          )}
                         </div>
                         <div className="operator-slide-actions">
-                          <button onClick={() => handleMove(i, -1)} title="Move up" disabled={i === 0}>↑</button>
-                          <button onClick={() => handleMove(i, 1)} title="Move down" disabled={i === slides.length - 1}>↓</button>
-                          <button onClick={() => handleEdit(i)} title="Edit" className="edit-btn">✏️</button>
-                          <button onClick={() => handleDelete(i)} title="Delete" className="delete-btn">🗑️</button>
+                          <button onClick={() => handleToggleSlideActive(i)} title={slide.active === false ? 'Activate' : 'Pause'}>
+                            {slide.active === false ? '▶️' : '⏸️'}
+                          </button>
+                          <button onClick={() => handleMoveSlide(i, -1)} title="Move up" disabled={i === 0}>↑</button>
+                          <button onClick={() => handleMoveSlide(i, 1)} title="Move down" disabled={i === slides.length - 1}>↓</button>
+                          <button onClick={() => handleEditSlide(i)} title="Edit" className="edit-btn">✏️</button>
+                          <button onClick={() => handleDeleteSlide(i)} title="Delete" className="delete-btn">🗑️</button>
                         </div>
                       </div>
                     ))}
@@ -227,27 +254,27 @@ export default function OperatorModal({ isOpen, onClose, slides, setSlides, them
 
                 {/* Add / Edit form */}
                 <div className="operator-section">
-                  <h3>{editingIndex !== null ? `Edit Slide #${editingIndex + 1}` : 'Add New Slide'}</h3>
-                  <div className="operator-form">
+                  <h3>{editingSlideIndex !== null ? `Edit Banner #${editingSlideIndex + 1}` : 'Add New Billboard Advertisement Banner'}</h3>
+                  <div className="operator-form space-y-4">
 
                     {/* File upload */}
                     <div className="operator-field">
-                      <label>Upload Image or Video</label>
+                      <label>Upload Banner Image or Video</label>
                       <input
-                        ref={fileInputRef}
+                        ref={slideFileInputRef}
                         type="file"
                         accept="image/*,video/*"
-                        onChange={handleFileUpload}
+                        onChange={handleSlideFileUpload}
                         className="operator-file-input"
                       />
-                      {form.media && (
-                        <div className="operator-media-preview">
-                          {form.mediaType === 'video' ? (
-                            <video src={form.media} controls muted className="operator-media-thumb" />
+                      {slideForm.media && (
+                        <div className="operator-media-preview mt-2">
+                          {slideForm.mediaType === 'video' ? (
+                            <video src={slideForm.media} controls muted className="operator-media-thumb" />
                           ) : (
-                            <img src={form.media} alt="uploaded" className="operator-media-thumb" />
+                            <img src={slideForm.media} alt="uploaded" className="operator-media-thumb" />
                           )}
-                          <button onClick={handleRemoveMedia} className="operator-media-remove" title="Remove">✕</button>
+                          <button onClick={() => setSlideForm({ ...slideForm, media: '', mediaType: 'image' })} className="operator-media-remove" title="Remove">✕</button>
                         </div>
                       )}
                     </div>
@@ -256,50 +283,45 @@ export default function OperatorModal({ isOpen, onClose, slides, setSlides, them
                       <label>Offer Title *</label>
                       <input
                         type="text"
-                        value={form.title}
-                        onChange={(e) => setForm({ ...form, title: e.target.value })}
-                        placeholder="Fresh Ice Cream Combo Offer"
+                        value={slideForm.title}
+                        onChange={(e) => setSlideForm({ ...slideForm, title: e.target.value })}
+                        placeholder="Fresh Amul Ice Cream Combo Offer"
                       />
                     </div>
 
-                    <div className="operator-field">
-                      <label>Discount / Offer Badge (Optional)</label>
-                      <input
-                        type="text"
-                        value={form.badge || ''}
-                        onChange={(e) => setForm({ ...form, badge: e.target.value })}
-                        placeholder="e.g. 20% OFF or ₹30 Only"
-                      />
-                    </div>
-
-                    {/* Live preview */}
-                    {form.title && (
-                      <div className="operator-preview">
-                        <span className="operator-preview-label">Preview</span>
-                        <div className="operator-preview-card">
-                          {form.media && (
-                            form.mediaType === 'video' ? (
-                              <video src={form.media} muted autoPlay loop className="operator-preview-vid" />
-                            ) : (
-                              <img src={form.media} alt="preview" />
-                            )
-                          )}
-                          <div className="operator-preview-overlay">
-                            <span className="operator-preview-title">{form.title}</span>
-                            {form.badge && <span className="operator-preview-badge">{form.badge}</span>}
-                          </div>
-                        </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="operator-field">
+                        <label>Discount Badge Text</label>
+                        <input
+                          type="text"
+                          value={slideForm.badge || ''}
+                          onChange={(e) => setSlideForm({ ...slideForm, badge: e.target.value })}
+                          placeholder="e.g. 20% OFF or Buy 2 Get 1"
+                        />
                       </div>
-                    )}
 
-                    <div className="operator-form-actions">
-                      {editingIndex !== null ? (
+                      <div className="operator-field">
+                        <label>Badge Sparkle Color</label>
+                        <select
+                          value={slideForm.badgeStyle || 'gold'}
+                          onChange={(e) => setSlideForm({ ...slideForm, badgeStyle: e.target.value })}
+                          className="operator-select p-2 rounded-xl border border-slate-300"
+                        >
+                          {BADGE_STYLES.map((b) => (
+                            <option key={b.id} value={b.id}>{b.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="operator-form-actions pt-2">
+                      {editingSlideIndex !== null ? (
                         <>
-                          <button onClick={handleSave} className="operator-btn-primary">Save Changes</button>
-                          <button onClick={handleCancel} className="operator-btn-secondary">Cancel</button>
+                          <button onClick={handleSaveSlide} className="operator-btn-primary">Save Changes</button>
+                          <button onClick={handleCancelSlide} className="operator-btn-secondary">Cancel</button>
                         </>
                       ) : (
-                        <button onClick={handleAdd} className="operator-btn-primary" disabled={!form.title.trim()}>+ Add Slide</button>
+                        <button onClick={handleAddSlide} className="operator-btn-primary" disabled={!slideForm.title.trim()}>+ Add Billboard Banner</button>
                       )}
                     </div>
                   </div>
@@ -309,9 +331,9 @@ export default function OperatorModal({ isOpen, onClose, slides, setSlides, them
 
             {/* ==================== THEME TAB ==================== */}
             {activeTab === 'theme' && (
-              <div className="operator-section">
-                <h3>Choose Website Theme</h3>
-                <p className="operator-theme-hint">Select a theme to change the look and feel of the entire website.</p>
+              <div className="operator-section space-y-4">
+                <h3>Choose Website Theme & Atmosphere</h3>
+                <p className="operator-theme-hint">Select a theme to change the overall look, feel, and decorations of the website.</p>
                 <div className="operator-theme-grid">
                   {THEMES.map((t) => (
                     <button
@@ -324,6 +346,23 @@ export default function OperatorModal({ isOpen, onClose, slides, setSlides, them
                       {theme === t.id && <div className="operator-theme-check">✓ Active</div>}
                     </button>
                   ))}
+                </div>
+
+                <div className="pt-4 border-t border-slate-200">
+                  <label className="font-bold text-sm text-slate-800 block mb-1">Sparkle & Petals Density</label>
+                  <div className="flex gap-3">
+                    {['low', 'medium', 'high'].map((d) => (
+                      <button
+                        key={d}
+                        onClick={() => setSparkleDensity(d)}
+                        className={`px-4 py-2 rounded-xl text-xs font-bold capitalize transition-all ${
+                          sparkleDensity === d ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                        }`}
+                      >
+                        {d} Density
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import OfferCarousel from './components/OfferCarousel';
-import BrandsSection from './components/BrandsSection';
+import ProductMarquee from './components/ProductMarquee';
+import BrandsSection, { BRANDS as DEFAULT_BRANDS } from './components/BrandsSection';
 import OperatorModal from './components/OperatorModal';
 import { SHOP_INFO } from './data/defaultData';
 import LoadingScreen from './components/LoadingScreen';
@@ -11,11 +12,11 @@ import Footer from './components/Footer';
 
 /* Default slides — used if nothing is saved in localStorage */
 const DEFAULT_SLIDES = [
-  { image: '/offer_icecream.jpg', title: 'Fresh Ice Cream Combo Offer', badge: '20% OFF' },
-  { image: '/offer_xerox.jpg', title: 'Xerox & Printing Services', badge: '₹2 / Page' },
-  { image: '/offer_milk.jpg', title: 'Farm-Fresh Amul Milk – Daily', badge: '₹30 Only' },
-  { image: '/offer_lamination.jpg', title: 'Lamination & Binding Services', badge: 'Flat 15% OFF' },
-  { image: '/offer_lassi.jpg', title: 'Lassi & Buttermilk Specials', badge: 'Buy 2 Get 1' },
+  { image: '/offer_icecream.jpg', title: 'Fresh Ice Cream Combo Offer', badge: '20% OFF', whatsappText: 'Hi, I want to claim the Ice Cream Combo Offer!', badgeStyle: 'red', active: true },
+  { image: '/offer_xerox.jpg', title: 'Xerox & Printing Services', badge: '₹2 / Page', whatsappText: 'Hi, I need Xerox & Printing services.', badgeStyle: 'cyan', active: true },
+  { image: '/offer_milk.jpg', title: 'Farm-Fresh Amul Milk – Daily', badge: '₹30 Only', whatsappText: 'Hi, I want to order daily fresh Amul Milk.', badgeStyle: 'gold', active: true },
+  { image: '/offer_lamination.jpg', title: 'Lamination & Binding Services', badge: 'Flat 15% OFF', whatsappText: 'Hi, I need document lamination services.', badgeStyle: 'emerald', active: true },
+  { image: '/offer_lassi.jpg', title: 'Lassi & Buttermilk Specials', badge: 'Buy 2 Get 1', whatsappText: 'Hi, I want to order Lassi & Buttermilk!', badgeStyle: 'purple', active: true },
 ];
 
 export default function App() {
@@ -57,6 +58,7 @@ export default function App() {
             image: s.image || s.media || '',
             media: s.media || s.image || '',
             mediaType: s.mediaType || (s.image && typeof s.image === 'string' && s.image.endsWith('.mp4') ? 'video' : 'image'),
+            active: s.active !== false,
           }));
         }
       }
@@ -98,6 +100,9 @@ export default function App() {
 
             {/* Promotional Offers Carousel */}
             <OfferCarousel slides={slides} />
+
+            {/* Automatic Right-to-Left Product Showcase Ticker */}
+            <ProductMarquee lang={lang} />
 
             {/* Featured Brands Section */}
             <BrandsSection lang={lang} />

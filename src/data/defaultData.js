@@ -1,8 +1,8 @@
 export const SHOP_INFO = {
   nameEn: "TEJESH XEROX, MILK & ICE CREAM PARLOUR",
   nameMr: "तेजेश झेरॉक्स, मिल्क & आईस्क्रीम पार्लर",
-  ownerEn: "Pro. Ganesh Umtute",
-  ownerMr: "प्रो. प्रा. गणेश उमटुटे",
+  ownerEn: "Ganesh Usture",
+  ownerMr: "गणेश उस्तुरे",
   phonePrimary: "9420965100",
   phoneSecondary: "(02473) 265501",
   phoneTertiary: "8149400144",

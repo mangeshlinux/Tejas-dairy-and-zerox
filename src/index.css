@@ -179,107 +179,55 @@
 .offer-carousel {
   position: relative;
   width: 100%;
-  max-width: 900px;
+  max-width: 1150px;
   margin: 0 auto;
-  border-radius: 1.25rem;
+  border-radius: 1.5rem;
   overflow: hidden;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-  aspect-ratio: 16 / 8;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+  aspect-ratio: 21 / 9;
+  min-height: 320px;
+  max-height: 460px;
   user-select: none;
 }
 
-/* Viewport that clips slides */
-.carousel-viewport {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-/* Individual slide */
-.carousel-slide {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  transform: translateX(30px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
-  pointer-events: none;
-}
-
-.carousel-slide.active {
-  opacity: 1;
-  transform: translateX(0);
-  pointer-events: auto;
-  z-index: 2;
-}
-
-.carousel-slide.active.slide-prev {
-  animation: slideFromLeft 0.5s ease forwards;
-}
-
-.carousel-slide.active.slide-next {
-  animation: slideFromRight 0.5s ease forwards;
-}
-
-@keyframes slideFromRight {
-  from { opacity: 0; transform: translateX(40px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes slideFromLeft {
-  from { opacity: 0; transform: translateX(-40px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-
-/* Slide background image */
-.carousel-slide-img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Dark overlay */
-.carousel-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, transparent 30%, rgba(0, 0, 0, 0.65) 100%);
-}
-
-/* Offer title text */
-.carousel-caption {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 1.5rem 1.5rem 2.5rem;
-  z-index: 3;
-}
-
-.carousel-caption h3 {
-  color: #ffffff;
-  font-family: 'Outfit', sans-serif;
-  font-weight: 900;
-  font-size: 1.35rem;
-  line-height: 1.3;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-  letter-spacing: -0.01em;
-}
-
-/* ---- Discount badge with sparkle ---- */
+/* ---- Discount badge with sparkle & color themes ---- */
 .carousel-badge {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: 1.25rem;
+  right: 1.25rem;
   z-index: 4;
-  background: linear-gradient(135deg, #f59e0b, #d97706);
   color: #fff;
   font-family: 'Outfit', sans-serif;
   font-weight: 800;
-  font-size: 0.85rem;
-  padding: 0.4rem 0.9rem;
-  border-radius: 0.6rem;
-  box-shadow: 0 0 14px rgba(245, 158, 11, 0.45), 0 2px 6px rgba(0, 0, 0, 0.15);
+  font-size: 0.9rem;
+  padding: 0.45rem 1rem;
+  border-radius: 0.75rem;
   overflow: hidden;
+}
+
+.badge-style-gold {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.5), 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.badge-style-red {
+  background: linear-gradient(135deg, #dc2626, #991b1b);
+  box-shadow: 0 0 16px rgba(220, 38, 38, 0.5), 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.badge-style-emerald {
+  background: linear-gradient(135deg, #059669, #047857);
+  box-shadow: 0 0 16px rgba(5, 150, 105, 0.5), 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.badge-style-cyan {
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  box-shadow: 0 0 16px rgba(2, 132, 199, 0.5), 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.badge-style-purple {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  box-shadow: 0 0 16px rgba(124, 58, 237, 0.5), 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 /* Sparkle / shine sweep animation */
@@ -297,6 +245,21 @@
   );
   transform: skewX(-20deg);
   animation: shineSweep 2.5s ease-in-out infinite;
+}
+
+/* ---- Automatic Right-to-Left Product Marquee ---- */
+.animate-marquee-rtl {
+  display: flex;
+  animation: marqueeRtl 22s linear infinite;
+}
+
+@keyframes marqueeRtl {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-33.333333%);
+  }
 }
 
 @keyframes shineSweep {
