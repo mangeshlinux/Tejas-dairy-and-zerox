@@ -11,14 +11,8 @@ import ThemeDecorations from './components/ThemeDecorations';
 import Footer from './components/Footer';
 import { saveSlides, loadSlides } from './utils/db';
 
-/* Default slides — used if nothing is saved in localStorage */
-const DEFAULT_SLIDES = [
-  { image: '/offer_icecream.jpg', title: 'Fresh Ice Cream Combo Offer', badge: '20% OFF', whatsappText: 'Hi, I want to claim the Ice Cream Combo Offer!', badgeStyle: 'red', active: true },
-  { image: '/offer_xerox.jpg', title: 'Xerox & Printing Services', badge: '₹2 / Page', whatsappText: 'Hi, I need Xerox & Printing services.', badgeStyle: 'cyan', active: true },
-  { image: '/offer_milk.jpg', title: 'Farm-Fresh Amul Milk – Daily', badge: '₹30 Only', whatsappText: 'Hi, I want to order daily fresh Amul Milk.', badgeStyle: 'gold', active: true },
-  { image: '/offer_lamination.jpg', title: 'Lamination & Binding Services', badge: 'Flat 15% OFF', whatsappText: 'Hi, I need document lamination services.', badgeStyle: 'emerald', active: true },
-  { image: '/offer_lassi.jpg', title: 'Lassi & Buttermilk Specials', badge: 'Buy 2 Get 1', whatsappText: 'Hi, I want to order Lassi & Buttermilk!', badgeStyle: 'purple', active: true },
-];
+/* No default slides — operator adds real banners via Operator Portal */
+const DEFAULT_SLIDES = [];
 
 export default function App() {
   const [lang, setLang] = useState('en');
