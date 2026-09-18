@@ -118,11 +118,11 @@ export default function OfferCarousel({ slides = [] }) {
                 )}
 
                 {/* Gradient dark overlay */}
-                <div className="carousel-overlay bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
+                <div className="carousel-overlay bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
 
                 {/* Offer title caption */}
                 <div className="carousel-caption p-6 sm:p-8">
-                  <h3 className="text-xl sm:text-3xl font-black text-white leading-tight font-display tracking-tight drop-shadow-md">
+                  <h3 className="text-xl sm:text-3xl font-black text-white leading-tight font-display tracking-tight" style={{textShadow: '0 2px 12px rgba(0,0,0,0.9), 0 1px 3px rgba(0,0,0,0.8)'}}>
                     {slide.title}
                   </h3>
                 </div>
