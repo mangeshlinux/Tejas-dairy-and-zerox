@@ -68,6 +68,10 @@ function normalizeSlide(data) {
     mediaMobile: data.mediaMobile || "",
     mediaType: data.mediaType || "image",
     mediaMobileType: data.mediaMobileType || "image",
+    desktopWidth: data.desktopWidth || "",
+    desktopHeight: data.desktopHeight || "",
+    mobileWidth: data.mobileWidth || "",
+    mobileHeight: data.mobileHeight || "",
     active: data.active !== false,
   };
 }
@@ -107,8 +111,12 @@ export async function saveCloudSlides(slides) {
         media,
         image: media,
         mediaType: slide.mediaType || "image",
+        desktopWidth: slide.desktopWidth || "",
+        desktopHeight: slide.desktopHeight || "",
         mediaMobile,
         mediaMobileType: slide.mediaMobileType || "image",
+        mobileWidth: slide.mobileWidth || "",
+        mobileHeight: slide.mobileHeight || "",
         order: i,
       };
     })

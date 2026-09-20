@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 @layer base {
   body {
@@ -93,7 +93,7 @@
   transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
               box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* Soft fade mask — blends image edges into the background */
+  /* Soft fade mask â€” blends image edges into the background */
   -webkit-mask-image: linear-gradient(
     to right,
     transparent 0%,
@@ -184,14 +184,14 @@
   margin: 0 auto;
   border-radius: 1.5rem;
   overflow: hidden;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.10), 0 1px 4px rgba(0, 0, 0, 0.06);
   aspect-ratio: 21 / 9;
   min-height: 320px;
   max-height: 460px;
   user-select: none;
 }
 
-/* Viewport container — clips slides */
+/* Viewport container â€” clips slides */
 .carousel-viewport {
   position: relative;
   width: 100%;
@@ -1083,7 +1083,7 @@
    ============================================================ */
 
 /* ============================================================
-   THEME DECORATIONS — AUTHENTIC INDIAN MARIGOLD GARLANDS & TORAN
+   THEME DECORATIONS â€” AUTHENTIC INDIAN MARIGOLD GARLANDS & TORAN
    ============================================================ */
 
 /* ---- Festival: Top Doorway Toran (Bandhanwar) ---- */
@@ -1628,4 +1628,402 @@
 
 .side-scroll-fade--right {
   background: linear-gradient(270deg, rgba(255, 249, 240, 0.95) 0%, transparent 100%);
+}
+
+/* ============================================================
+   BRAND CARDS â€” BrandsSection.jsx
+   ============================================================ */
+
+.brands-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  padding: 0.6rem 0.4rem 0.5rem;
+  border-radius: 0.85rem;
+  border: 1.5px solid transparent;
+  background: transparent;
+  transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* Non-clickable brands: subtle hover only */
+.brands-card:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+/* Clickable (cold-drink) brands */
+.brands-card--clickable {
+  cursor: pointer;
+  border-color: transparent;
+  background: transparent;
+}
+
+.brands-card--clickable:hover {
+  background: transparent;
+  border-color: transparent;
+  transform: translateY(-3px);
+  box-shadow: none;
+}
+
+.brands-card--clickable:active {
+  transform: translateY(-1px);
+}
+
+/* "N drinks" pill badge on top-right */
+.brands-card-badge {
+  position: absolute;
+  top: 0.3rem;
+  right: 0.3rem;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.55rem;
+  font-weight: 800;
+  padding: 0.15rem 0.35rem;
+  border-radius: 0.4rem;
+  letter-spacing: 0.03em;
+  line-height: 1.2;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(217, 119, 6, 0.3);
+}
+
+/* Logo container */
+.brands-card-logo-wrap {
+  height: 3rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.35rem;
+}
+
+.brands-card-logo-img {
+  max-height: 100%;
+  max-width: 110px;
+  object-fit: contain;
+  transition: transform 0.25s ease, filter 0.25s ease;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.06));
+}
+
+.brands-card--clickable:hover .brands-card-logo-img {
+  transform: scale(1.08);
+  filter: drop-shadow(0 3px 8px rgba(0,0,0,0.12));
+}
+
+.brands-card-logo-emoji {
+  font-size: 2.2rem;
+  line-height: 1;
+  transition: transform 0.25s ease;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.brands-card--clickable:hover .brands-card-logo-emoji {
+  transform: scale(1.1);
+}
+
+/* Name */
+.brands-card-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #1e293b;
+  line-height: 1.2;
+  transition: color 0.2s;
+  margin-bottom: 0.15rem;
+}
+
+.brands-card--clickable:hover .brands-card-name {
+  color: #d97706;
+}
+
+/* Description line */
+.brands-card-desc {
+  font-size: 0.6rem;
+  color: #94a3b8;
+  line-height: 1.3;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* "View list" chevron hint */
+.brands-card-tap-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  margin-top: 0.3rem;
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: #d97706;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.brands-card--clickable:hover .brands-card-tap-hint {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 640px) {
+  .brands-card-logo-wrap { height: 2.4rem; }
+  .brands-card-logo-img  { max-width: 80px; }
+  .brands-card-logo-emoji { font-size: 1.8rem; }
+  .brands-card-name      { font-size: 0.65rem; }
+  .brands-card-desc      { font-size: 0.55rem; }
+  .brands-card-badge     { font-size: 0.5rem; }
+}
+
+/* ============================================================
+}
+
+/* ============================================================
+   PAPER DOCUMENT MODAL — Single Column
+   ============================================================ */
+
+/* ── Backdrop ── */
+.doc-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1rem;
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* ── Paper Document Box ── */
+.doc-paper {
+  background: #FAF7F2; /* Warm cream paper */
+  width: 100%;
+  max-width: 760px; /* Document width, not too wide */
+  max-height: 90vh;
+  position: relative;
+  border-radius: 4px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.05),
+    0 25px 60px -10px rgba(0,0,0,0.4),
+    0 10px 20px -5px rgba(0,0,0,0.2);
+  animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  font-family: 'Georgia', 'Times New Roman', serif;
+  color: #333333;
+  padding: 0;
+}
+
+/* ── Custom Scrollbar for Paper ── */
+.doc-paper::-webkit-scrollbar { width: 6px; }
+.doc-paper::-webkit-scrollbar-track { background: transparent; }
+.doc-paper::-webkit-scrollbar-thumb { background: #E7E5E4; border-radius: 3px; }
+.doc-paper::-webkit-scrollbar-thumb:hover { background: #D6D3D1; }
+
+/* ── Close Button ── */
+.doc-close-btn {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #EAE6DF;
+  border: 1px solid #D6D3D1;
+  color: #57534E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-family: sans-serif;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  z-index: 10;
+}
+
+.doc-close-btn:hover {
+  background: #EF4444;
+  color: #FFFFFF;
+  border-color: #DC2626;
+}
+
+/* ── Top Brand Section ── */
+.doc-brand-section {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 2.5rem 2.5rem 1rem;
+  border-bottom: 2px solid #E7E5E4;
+  margin-bottom: 0.5rem;
+}
+
+.doc-brand-logo {
+  max-width: 80px;
+  max-height: 80px;
+  object-fit: contain;
+  background: #FFFFFF;
+  padding: 0.25rem;
+  border: 1px solid #E7E5E4;
+  border-radius: 4px;
+}
+
+.doc-brand-emoji {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.doc-brand-text {
+  flex: 1;
+}
+
+.doc-brand-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #1C1917;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.doc-brand-category {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #78716C;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-top: 0.25rem;
+}
+
+/* ── Meta Info Bar ── */
+.doc-meta-bar {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 2.5rem 1.5rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #A8A29E;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Table Header ── */
+.doc-table-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 2.5rem;
+  border-top: 1px dotted #D6D3D1;
+  border-bottom: 1px dotted #D6D3D1;
+  background: #F5F1E8;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #78716C;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.doc-col-num { width: 2.5rem; text-align: center; }
+.doc-col-desc { flex: 1; }
+.doc-col-sizes { text-align: right; width: 140px; }
+
+/* ── List Container (Single Column) ── */
+.doc-list-container {
+  padding: 0.5rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Product Row ── */
+.doc-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px dotted #E7E5E4;
+}
+
+.doc-row:last-child {
+  border-bottom: none;
+}
+
+.doc-row:hover {
+  background: #FDFBFA;
+}
+
+.doc-col-num {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  color: #A8A29E;
+  padding-top: 0.15rem;
+}
+
+.doc-item-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #292524;
+  line-height: 1.3;
+}
+
+.doc-item-note {
+  font-size: 0.85rem;
+  color: #78716C;
+  font-style: italic;
+}
+
+.doc-col-sizes {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #57534E;
+  padding-top: 0.25rem;
+}
+
+/* ── Footer ── */
+.doc-footer {
+  text-align: center;
+  padding: 2.5rem;
+  color: #A8A29E;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1.6;
+}
+
+.doc-divider-thin {
+  height: 1px;
+  background: #E7E5E4;
+  margin: 0 auto 1.5rem;
+  width: 50%;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .doc-backdrop { padding: 0; }
+  .doc-paper { 
+    max-height: 100dvh;
+    border-radius: 0;
+  }
+  .doc-brand-section { padding: 2rem 1.25rem 1rem; flex-direction: column; text-align: center; gap: 0.75rem; }
+  .doc-meta-bar { padding: 0 1.25rem 1rem; }
+  .doc-table-header { padding: 0.5rem 1.25rem; }
+  .doc-list-container { padding: 0.5rem 1.25rem; }
+  .doc-footer { padding: 2rem 1.25rem; }
+  .doc-col-sizes { text-align: left; width: auto; font-size: 0.75rem; }
+  
+  .doc-row {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    padding: 0.75rem 0;
+  }
+  .doc-col-desc { width: 100%; flex: none; padding-left: 3rem; margin-top: -1.4rem; }
+  .doc-col-sizes { padding-left: 3rem; margin-top: 0.25rem; }
 }

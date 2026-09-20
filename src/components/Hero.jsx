@@ -69,7 +69,7 @@ export default function Hero({ lang }) {
         <div className="hero-image-wrapper flex-shrink-0 w-full lg:w-[420px] max-h-[260px] sm:max-h-none overflow-hidden">
           <div className="hero-image-frame">
             <img
-              src="/shop_photo_1.png"
+              src="/store_front_real.png"
               alt="Tejesh Xerox & Dairy Shop"
               className="hero-image"
             />

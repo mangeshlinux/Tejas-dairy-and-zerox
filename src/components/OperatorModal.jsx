@@ -52,8 +52,12 @@ export default function OperatorModal({
   const [slideForm, setSlideForm] = useState({
     media: '',
     mediaType: 'image',
+    desktopWidth: '',
+    desktopHeight: '',
     mediaMobile: '',
     mediaMobileType: 'image',
+    mobileWidth: '',
+    mobileHeight: '',
     title: '',
     badge: '',
     badgeStyle: 'gold',
@@ -82,7 +86,7 @@ export default function OperatorModal({
     setPinError('');
     setSyncStatus('');
     setEditingSlideIndex(null);
-    setSlideForm({ media: '', mediaType: 'image', mediaMobile: '', mediaMobileType: 'image', title: '', badge: '', badgeStyle: 'gold', active: true });
+    setSlideForm({ media: '', mediaType: 'image', desktopWidth: '', desktopHeight: '', mediaMobile: '', mediaMobileType: 'image', mobileWidth: '', mobileHeight: '', title: '', badge: '', badgeStyle: 'gold', active: true });
     onClose();
   };
 
@@ -148,7 +152,7 @@ export default function OperatorModal({
       { ...slideForm, image: slideForm.media },
     ];
     setSlides(updated);
-    setSlideForm({ media: '', mediaType: 'image', mediaMobile: '', mediaMobileType: 'image', title: '', badge: '', badgeStyle: 'gold', active: true });
+    setSlideForm({ media: '', mediaType: 'image', desktopWidth: '', desktopHeight: '', mediaMobile: '', mediaMobileType: 'image', mobileWidth: '', mobileHeight: '', title: '', badge: '', badgeStyle: 'gold', active: true });
     if (slideFileInputRef.current) slideFileInputRef.current.value = '';
     if (slideFileMobileInputRef.current) slideFileMobileInputRef.current.value = '';
     syncSlidesToCloud(updated);
@@ -160,8 +164,12 @@ export default function OperatorModal({
     setSlideForm({
       media: s.media || s.image || '',
       mediaType: s.mediaType || 'image',
+      desktopWidth: s.desktopWidth || '',
+      desktopHeight: s.desktopHeight || '',
       mediaMobile: s.mediaMobile || '',
       mediaMobileType: s.mediaMobileType || 'image',
+      mobileWidth: s.mobileWidth || '',
+      mobileHeight: s.mobileHeight || '',
       title: s.title || '',
       badge: s.badge || '',
       badgeStyle: s.badgeStyle || 'gold',
@@ -178,7 +186,7 @@ export default function OperatorModal({
     };
     setSlides(updated);
     setEditingSlideIndex(null);
-    setSlideForm({ media: '', mediaType: 'image', mediaMobile: '', mediaMobileType: 'image', title: '', badge: '', badgeStyle: 'gold', active: true });
+    setSlideForm({ media: '', mediaType: 'image', desktopWidth: '', desktopHeight: '', mediaMobile: '', mediaMobileType: 'image', mobileWidth: '', mobileHeight: '', title: '', badge: '', badgeStyle: 'gold', active: true });
     if (slideFileInputRef.current) slideFileInputRef.current.value = '';
     if (slideFileMobileInputRef.current) slideFileMobileInputRef.current.value = '';
     syncSlidesToCloud(updated);
@@ -186,7 +194,7 @@ export default function OperatorModal({
 
   const handleCancelSlide = () => {
     setEditingSlideIndex(null);
-    setSlideForm({ media: '', mediaType: 'image', mediaMobile: '', mediaMobileType: 'image', title: '', badge: '', badgeStyle: 'gold', active: true });
+    setSlideForm({ media: '', mediaType: 'image', desktopWidth: '', desktopHeight: '', mediaMobile: '', mediaMobileType: 'image', mobileWidth: '', mobileHeight: '', title: '', badge: '', badgeStyle: 'gold', active: true });
     if (slideFileInputRef.current) slideFileInputRef.current.value = '';
     if (slideFileMobileInputRef.current) slideFileMobileInputRef.current.value = '';
   };
@@ -337,6 +345,13 @@ export default function OperatorModal({
                         onChange={handleSlideFileUpload}
                         className="operator-file-input"
                       />
+                      {/* Desktop dimensions hint */}
+                      <div className="mt-2 p-2 bg-slate-50 border border-slate-100 rounded-md">
+                        <p className="text-xs text-slate-500">
+                          <span className="font-semibold text-slate-700">Recommended Size:</span> 1920px (Width) × 600px (Height)
+                        </p>
+                        <p className="text-[10px] text-slate-400 mt-0.5">Please upload landscape (wide) images for the best desktop view.</p>
+                      </div>
                       {slideForm.media && (
                         <div className="operator-media-preview mt-2">
                           {slideForm.mediaType === 'video' ? (
@@ -360,6 +375,13 @@ export default function OperatorModal({
                         onChange={handleSlideMobileFileUpload}
                         className="operator-file-input"
                       />
+                      {/* Mobile dimensions hint */}
+                      <div className="mt-2 p-2 bg-slate-50 border border-slate-100 rounded-md">
+                        <p className="text-xs text-slate-500">
+                          <span className="font-semibold text-slate-700">Recommended Size:</span> 1080px (Width) × 1080px (Height)
+                        </p>
+                        <p className="text-[10px] text-slate-400 mt-0.5">Please upload square or portrait images for the mobile view.</p>
+                      </div>
                       {slideForm.mediaMobile && (
                         <div className="operator-media-preview mt-2">
                           {slideForm.mediaMobileType === 'video' ? (

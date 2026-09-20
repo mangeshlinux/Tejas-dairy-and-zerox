@@ -94,7 +94,7 @@ export default function OfferCarousel({ slides = [] }) {
   return (
     <section className="max-w-[1380px] mx-auto px-4 sm:px-6 lg:px-8 py-4" aria-label="Promotional Billboard Banners">
       <div
-        className="offer-carousel offer-billboard shadow-2xl rounded-3xl overflow-hidden relative group border border-amber-300/40"
+        className="offer-carousel offer-billboard rounded-3xl overflow-hidden relative group border border-amber-300/40"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
@@ -147,7 +147,7 @@ export default function OfferCarousel({ slides = [] }) {
 
                 {/* Offer title caption */}
                 <div className="carousel-caption p-6 sm:p-8">
-                  <h3 className="text-xl sm:text-3xl font-black text-white leading-tight font-display tracking-tight" style={{textShadow: '0 2px 12px rgba(0,0,0,0.9), 0 1px 3px rgba(0,0,0,0.8)'}}>
+                  <h3 className="text-xl sm:text-3xl font-black text-white leading-tight font-display tracking-tight drop-shadow-lg">
                     {slide.title}
                   </h3>
                 </div>
