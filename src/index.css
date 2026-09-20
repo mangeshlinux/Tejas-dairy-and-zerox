@@ -1,4 +1,4 @@
-﻿@import "tailwindcss";
+@import "tailwindcss";
 
 @layer base {
   body {
@@ -1126,12 +1126,20 @@
 /* ---- Festival: Under-Header Scalloped Festoon Garland ---- */
 .header-festoon-container {
   position: fixed;
-  top: clamp(88px, 8.5vh, 108px);
+  top: 90px; /* Aligned exactly below the desktop header */
   left: 0;
   right: 0;
   height: 95px;
   z-index: 38;
   pointer-events: none;
+  transform-origin: top center;
+  animation: festoonGentleSway 6s ease-in-out infinite alternate;
+}
+
+@keyframes festoonGentleSway {
+  0% { transform: rotate(-1deg) translateY(0px) scale(1); }
+  50% { transform: rotate(0deg) translateY(2px) scale(1.02); }
+  100% { transform: rotate(1deg) translateY(0px) scale(1); }
 }
 
 .header-festoon-svg {
@@ -1356,7 +1364,13 @@
   .garland-corner--right .garland-strand--primary { transform-origin: top right; }
   .top-toran-container { height: 36px; }
   .toran-knot-item:nth-child(even) { display: none; }
-  .header-festoon-container { top: 84px; transform: scale(0.85); transform-origin: top center; }
+  .header-festoon-container { top: 66px; transform: scale(0.85); transform-origin: top center; animation: festoonGentleSwayMobile 5s ease-in-out infinite alternate; }
+
+  @keyframes festoonGentleSwayMobile {
+    0% { transform: scale(0.85) rotate(-1.5deg) translateY(0px); }
+    50% { transform: scale(0.86) rotate(0deg) translateY(2px); }
+    100% { transform: scale(0.85) rotate(1.5deg) translateY(0px); }
+  }
   .header-festoon-center-drop { display: none; }
   .header-festoon-knot:nth-child(even) { display: none; }
 }

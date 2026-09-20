@@ -33,12 +33,20 @@ export default function App() {
     try { localStorage.setItem("tejesh_sparkle_density", sparkleDensity); } catch (_) {}
   }, [sparkleDensity]);
 
-  const [slides, setSlides] = useState([]);
+  const [slides, setSlides] = useState(() => {
+    try {
+      const saved = localStorage.getItem("tejesh_slides");
+      return saved ? JSON.parse(saved) : [];
+    } catch (_) {
+      return [];
+    }
+  });
 
   /* Real-time Firebase listeners - fires on all devices the moment anything changes */
   useEffect(() => {
     const unsub = subscribeToSlides((cloudSlides) => {
       setSlides(cloudSlides);
+      try { localStorage.setItem("tejesh_slides", JSON.stringify(cloudSlides)); } catch (_) {}
     });
     return unsub;
   }, []);
