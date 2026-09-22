@@ -213,10 +213,6 @@ export function subscribeToSlides(callback) {
    SETTINGS  (theme + sparkle density)
    ================================================================ */
 
-import {
-  setDoc,
-} from "firebase/firestore";
-
 /**
  * Saves theme and sparkle density to Firestore.
  */
