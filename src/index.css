@@ -817,6 +817,28 @@
 .operator-btn-secondary:hover {
   background: #e2e8f0;
 }
+.operator-btn-save-cloud {
+  padding: 0.45rem 1rem;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: #fff;
+  font-weight: 700;
+  border: none;
+  border-radius: 0.55rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
+}
+.operator-btn-save-cloud:hover:not(:disabled) {
+  transform: scale(1.04);
+  box-shadow: 0 4px 16px rgba(79, 70, 229, 0.4);
+}
+.operator-btn-save-cloud:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
 
 @media (max-width: 640px) {
   .operator-modal {

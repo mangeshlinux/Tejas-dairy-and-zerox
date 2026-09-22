@@ -285,7 +285,17 @@ export default function OperatorModal({
               <>
                 {/* Slide list */}
                 <div className="operator-section">
-                  <h3>Current Advertisements & Billboard Banners</h3>
+                  <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
+                    <h3 style={{margin:0}}>Current Advertisements & Billboard Banners</h3>
+                    <button
+                      onClick={() => syncSlidesToCloud(slides)}
+                      disabled={syncStatus === 'saving'}
+                      className="operator-btn-save-cloud"
+                      title="Save all banners to Firebase cloud"
+                    >
+                      {syncStatus === 'saving' ? '☁️ Saving...' : syncStatus === 'saved' ? '✅ Saved!' : syncStatus === 'error' ? '❌ Retry Save' : '💾 Save to Cloud'}
+                    </button>
+                  </div>
                   {slides.length === 0 && (
                     <p className="operator-empty">No slides added yet. Create one below.</p>
                   )}

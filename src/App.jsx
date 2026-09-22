@@ -45,8 +45,16 @@ export default function App() {
   /* Real-time Firebase listeners - fires on all devices the moment anything changes */
   useEffect(() => {
     const unsub = subscribeToSlides((cloudSlides) => {
-      setSlides(cloudSlides);
-      try { localStorage.setItem("tejesh_slides", JSON.stringify(cloudSlides)); } catch (_) {}
+      /* Only update if cloud returned actual slides OR we have none locally.
+         This prevents a temporary Firebase error / missing env-vars from
+         wiping slides that were already loaded from localStorage or a prior sync. */
+      setSlides((prev) => {
+        if (cloudSlides.length === 0 && prev.length > 0) return prev;
+        return cloudSlides;
+      });
+      if (cloudSlides.length > 0) {
+        try { localStorage.setItem("tejesh_slides", JSON.stringify(cloudSlides)); } catch (_) {}
+      }
     });
     return unsub;
   }, []);
