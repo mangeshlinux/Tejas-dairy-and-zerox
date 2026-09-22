@@ -1,15 +1,21 @@
 /* ================================================================
-   cloudStorage.js - Firestore-only sync (no Firebase Storage needed)
+   cloudStorage.js - Firebase Storage + Firestore sync
    ================================================================
-   Images are compressed client-side with Canvas before being
-   stored as base64 strings directly in Firestore documents.
-   Each slide is its own Firestore document to stay well under
-   the 1 MB per-document limit (free Spark plan compatible).
-   Real-time listeners (onSnapshot) push changes to every connected
-   device the moment anything is saved.
+   Images and videos are uploaded directly to Firebase Storage at
+   FULL ORIGINAL QUALITY — no compression, no size limits.
+   Only the public download URL is stored in the Firestore document
+   (tiny string, well within the 1 MB doc limit).
+
+   Flow:
+     Upload  → base64 → Storage blob → download URL → Firestore doc
+     Display → Firestore doc → download URL → <img src={url} />
+     Delete  → Firestore doc deleted → Storage file deleted
+
+   Real-time listeners (onSnapshot) push URL changes to every
+   connected device the moment anything is saved.
    ================================================================ */
 
-import { db } from "./firebase";
+import { db, storage } from "./firebase";
 import {
   collection,
   doc,
@@ -18,47 +24,81 @@ import {
   writeBatch,
   getDocs,
 } from "firebase/firestore";
+import {
+  ref,
+  uploadString,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
 
 const SLIDES_COL = "slides";
+const STORAGE_FOLDER = "banners";
 
-/* ---- image compression ---- */
+/* ================================================================
+   STORAGE HELPERS
+   ================================================================ */
 
 /**
- * Compresses a base64 image using Canvas API.
- * - Resizes to max 1280px wide
- * - Re-encodes as JPEG at 72% quality
- * - Skips videos (cannot compress in browser)
- * - Skips already-remote URLs (https://)
+ * Converts a base64 dataURL to a Blob for upload.
  */
-async function compressMedia(dataUrl, mediaType) {
-  if (!dataUrl || !dataUrl.startsWith("data:") || mediaType === "video") {
+function dataURLtoBlob(dataUrl) {
+  const [header, data] = dataUrl.split(",");
+  const mime = header.match(/:(.*?);/)[1];
+  const binary = atob(data);
+  const arr = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) arr[i] = binary.charCodeAt(i);
+  return new Blob([arr], { type: mime });
+}
+
+/**
+ * Uploads a base64 dataURL to Firebase Storage at full original quality.
+ * Returns the public HTTPS download URL.
+ * If the value is already an https:// URL (already uploaded), returns it as-is.
+ * @param {string} dataUrl - base64 data URL or existing https URL
+ * @param {string} slideId - used to build the Storage path
+ * @param {string} suffix  - 'desktop' or 'mobile'
+ * @returns {Promise<string>} download URL
+ */
+async function uploadToStorage(dataUrl, slideId, suffix) {
+  /* Already a remote URL — nothing to upload */
+  if (!dataUrl || dataUrl.startsWith("https://") || dataUrl.startsWith("http://")) {
     return dataUrl || "";
   }
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => {
-      const MAX_W = 1280;
-      const ratio = img.width > MAX_W ? MAX_W / img.width : 1;
-      const canvas = document.createElement("canvas");
-      canvas.width = Math.round(img.width * ratio);
-      canvas.height = Math.round(img.height * ratio);
-      canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
-      resolve(canvas.toDataURL("image/jpeg", 0.72));
-    };
-    img.onerror = () => resolve(dataUrl);
-    img.src = dataUrl;
-  });
-}
+  /* Not a base64 string — skip */
+  if (!dataUrl.startsWith("data:")) return "";
 
-/* ---- helpers ---- */
+  const path = `${STORAGE_FOLDER}/${slideId}_${suffix}`;
+  const storageRef = ref(storage, path);
 
-function isBase64(str) {
-  return typeof str === "string" && str.startsWith("data:");
+  /* uploadString with 'data_url' format handles the base64 directly */
+  await uploadString(storageRef, dataUrl, "data_url");
+  const url = await getDownloadURL(storageRef);
+  console.log(`[cloudStorage] uploaded ${suffix} → ${path} (${Math.round(dataUrl.length / 1024)} KB base64)`);
+  return url;
 }
 
 /**
- * Normalizes a raw Firestore slide doc to the shape the rest of the
- * app expects (media, image, mediaMobile fields populated).
+ * Attempts to delete a Storage file by path. Silently ignores errors
+ * (file may already be deleted or never have been uploaded).
+ * @param {string} slideId
+ * @param {string} suffix - 'desktop' or 'mobile'
+ */
+async function deleteFromStorage(slideId, suffix) {
+  try {
+    const path = `${STORAGE_FOLDER}/${slideId}_${suffix}`;
+    await deleteObject(ref(storage, path));
+    console.log(`[cloudStorage] deleted Storage file: ${path}`);
+  } catch (_) {
+    /* ignore — file may not exist */
+  }
+}
+
+/* ================================================================
+   SLIDE NORMALIZER
+   ================================================================ */
+
+/**
+ * Normalizes a raw Firestore slide doc to the shape the app expects.
  */
 function normalizeSlide(data) {
   return {
@@ -68,10 +108,6 @@ function normalizeSlide(data) {
     mediaMobile: data.mediaMobile || "",
     mediaType: data.mediaType || "image",
     mediaMobileType: data.mediaMobileType || "image",
-    desktopWidth: data.desktopWidth || "",
-    desktopHeight: data.desktopHeight || "",
-    mobileWidth: data.mobileWidth || "",
-    mobileHeight: data.mobileHeight || "",
     active: data.active !== false,
   };
 }
@@ -81,26 +117,35 @@ function normalizeSlide(data) {
    ================================================================ */
 
 /**
- * Saves all slides to Firestore.
- * - Compresses new base64 images before storing
- * - Each slide is stored as its own document (avoids 1 MB limit)
- * - Removes Firestore documents for slides that were deleted
+ * Saves all slides to Firestore + Firebase Storage.
+ *
+ * For each slide:
+ *   - If media is a new base64 → upload to Storage → store URL in Firestore
+ *   - If media is already an https URL → keep as-is (already uploaded)
+ *   - Storage files for deleted slides are cleaned up automatically
+ *
  * @param {Array} slides
- * @returns {Array} normalized slides ready for app use
+ * @returns {Array} normalized slides with Storage URLs
  */
 export async function saveCloudSlides(slides) {
-  /* Compress any new base64 images */
+  /* Upload any new base64 images/videos to Storage */
   const processed = await Promise.all(
     slides.map(async (slide, i) => {
       const id = slide.id || ("slide_" + Date.now() + "_" + i);
 
-      const media = isBase64(slide.media || slide.image || "")
-        ? await compressMedia(slide.media || slide.image || "", slide.mediaType)
-        : (slide.media || slide.image || "");
+      /* Upload desktop media if it's a new base64 blob */
+      const media = await uploadToStorage(
+        slide.media || slide.image || "",
+        id,
+        "desktop"
+      );
 
-      const mediaMobile = isBase64(slide.mediaMobile || "")
-        ? await compressMedia(slide.mediaMobile, slide.mediaMobileType)
-        : (slide.mediaMobile || "");
+      /* Upload mobile media if it's a new base64 blob */
+      const mediaMobile = await uploadToStorage(
+        slide.mediaMobile || "",
+        id,
+        "mobile"
+      );
 
       return {
         id,
@@ -108,15 +153,11 @@ export async function saveCloudSlides(slides) {
         badge: slide.badge || "",
         badgeStyle: slide.badgeStyle || "gold",
         active: slide.active !== false,
-        media,
-        image: media,
+        media,               /* https:// Storage URL */
+        image: media,        /* legacy alias */
         mediaType: slide.mediaType || "image",
-        desktopWidth: slide.desktopWidth || "",
-        desktopHeight: slide.desktopHeight || "",
-        mediaMobile,
+        mediaMobile,         /* https:// Storage URL or '' */
         mediaMobileType: slide.mediaMobileType || "image",
-        mobileWidth: slide.mobileWidth || "",
-        mobileHeight: slide.mobileHeight || "",
         order: i,
       };
     })
@@ -125,11 +166,18 @@ export async function saveCloudSlides(slides) {
   const batch = writeBatch(db);
   const colRef = collection(db, SLIDES_COL);
 
-  /* Delete Firestore docs for slides that were removed */
+  /* Find and delete Firestore docs (+ Storage files) for removed slides */
   const existing = await getDocs(colRef);
   const newIds = new Set(processed.map((s) => s.id));
+  const deletePromises = [];
+
   existing.forEach((d) => {
-    if (!newIds.has(d.id)) batch.delete(d.ref);
+    if (!newIds.has(d.id)) {
+      batch.delete(d.ref);
+      /* Also clean up Storage files */
+      deletePromises.push(deleteFromStorage(d.id, "desktop"));
+      deletePromises.push(deleteFromStorage(d.id, "mobile"));
+    }
   });
 
   /* Upsert all current slides */
@@ -137,7 +185,7 @@ export async function saveCloudSlides(slides) {
     batch.set(doc(colRef, slide.id), slide);
   });
 
-  await batch.commit();
+  await Promise.all([batch.commit(), ...deletePromises]);
   return processed.map(normalizeSlide);
 }
 
@@ -165,9 +213,12 @@ export function subscribeToSlides(callback) {
    SETTINGS  (theme + sparkle density)
    ================================================================ */
 
+import {
+  setDoc,
+} from "firebase/firestore";
+
 /**
  * Saves theme and sparkle density to Firestore.
- * All devices will receive the update via subscribeToSettings.
  */
 export async function saveCloudSettings(theme, sparkleDensity) {
   try {
@@ -179,7 +230,6 @@ export async function saveCloudSettings(theme, sparkleDensity) {
 
 /**
  * Real-time listener for settings.
- * Fires immediately with current data, then again on every change.
  * @param {Function} callback - receives { theme, sparkleDensity }
  * @returns {Function} unsubscribe function
  */

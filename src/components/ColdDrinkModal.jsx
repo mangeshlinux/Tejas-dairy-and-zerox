@@ -62,7 +62,7 @@ export default function ColdDrinkModal({ brand, onClose }) {
         {/* ══ META INFO ══ */}
         <div className="doc-meta-bar">
           <span>DATE: {today}</span>
-          <span>TOTAL ITEMS: {brand.products.length}</span>
+          <span>TOTAL ITEMS: {brand.products.filter(p => !p.divider).length}</span>
         </div>
 
         {/* ══ TABLE HEADER ══ */}
@@ -75,18 +75,24 @@ export default function ColdDrinkModal({ brand, onClose }) {
         {/* ══ PRODUCT LIST ══ */}
         <div className="doc-list-container">
           {brand.products.map((product, i) => (
-            <div key={i} className="doc-row">
-              <div className="doc-col-num">{i + 1}.</div>
-              <div className="doc-col-desc">
-                <span className="doc-item-name">{product.name}</span>
-                {product.note && (
-                  <span className="doc-item-note"> ({product.note})</span>
-                )}
+            product.divider ? (
+              <div key={i} className="doc-row doc-row--section-header">
+                <div className="doc-section-label">{product.name}</div>
               </div>
-              <div className="doc-col-sizes">
-                {product.sizes.join(', ')}
+            ) : (
+              <div key={i} className="doc-row">
+                <div className="doc-col-num">{brand.products.slice(0, i).filter(p => !p.divider).length + 1}.</div>
+                <div className="doc-col-desc">
+                  <span className="doc-item-name">{product.name}</span>
+                  {product.note && (
+                    <span className="doc-item-note"> ({product.note})</span>
+                  )}
+                </div>
+                <div className="doc-col-sizes">
+                  {product.sizes.join(', ')}
+                </div>
               </div>
-            </div>
+            )
           ))}
         </div>
 

@@ -8,7 +8,7 @@ export const BRANDS = [
     descEn: 'Ice Cream, Milk & Dairy',
     descMr: 'आईस्क्रीम, दूध व दुग्धजन्य पदार्थ',
     logo: '/brands/amul.png',
-    coldDrinkId: null,
+    coldDrinkId: 'amul',
   },
   {
     id: 'natural_milk',

@@ -143,55 +143,206 @@ export const COLD_DRINK_BRANDS = [
      ICE CREAM BRANDS
      ================================================================ */
 
+  /* ---- Amul Ice Cream ---- */
+  {
+    id: 'amul',
+    name: 'Amul Ice Cream',
+    category: 'ice_cream',
+    emoji: '🍦',
+    logo: '/brands/amul.png',
+    products: [
+      {
+        name: '₹10 Cone / Cup',
+        sizes: ['₹10'],
+        note: 'Vanilla · Chocolate · Strawberry · Butterscotch · Mango · Pista',
+      },
+      {
+        name: 'Cone',
+        sizes: ['Regular'],
+        note: 'Butterscotch · Choco Crunch · Two-in-One · Black Currant · Choco Vanilla · Pista Badam',
+      },
+      {
+        name: 'Cup',
+        sizes: ['Regular'],
+        note: 'Vanilla · Chocolate · Butterscotch · Rajbhog · Kesar Pista · American Nuts · Choco Chips · Strawberry',
+      },
+      {
+        name: 'Tub',
+        sizes: ['1 Litre'],
+        note: 'Rajbhog · Roasted Almond · Moroccan Dry Fruit · King Alphonso · Chocolate Brownie · Fruit N Nut · Choco Chips',
+      },
+      {
+        name: '1+1 / Combo',
+        sizes: ['Special Pack'],
+        note: 'Choco Chips · Creamy Almond · Kesar Pista · Strawberry · Tutti Frutti · Spanish Saffron & Cream',
+      },
+    ],
+  },
 
   /* ---- Natural Milk (Dairy Natural Ice Cream) ---- */
   {
     id: 'natural_milk',
     name: 'Dairy Natural',
-    category: 'ice_cream',
-    emoji: '🍦',
+    category: 'milk',
+    emoji: '🥛',
     logo: '/brands/natural_milk.png',
     products: [
       {
-        name: 'Large Cup',
-        sizes: ['65 ml'],
-        note: 'Vanilla · Pista · Strawberry · Mango · Butter Scotch · Tender Coconut',
+        name: 'Natural Healthy',
+        sizes: ['170 ml'],
+        note: 'Crate: 11.90 Litre',
       },
       {
-        name: 'King Cone',
-        sizes: ['110 ml'],
-        note: 'Choco Vanilla · Butterscotch · Belgium Chocolate · Dry Fruit Nutty Cone',
+        name: 'Toned Milk Fresh',
+        sizes: ['200 ml'],
+        note: 'Crate: 12 Litre',
       },
       {
-        name: 'Chocobar',
-        sizes: ['60 ml'],
-        note: 'Choco-Crunchi',
+        name: 'Std Milk Shudha 4.5',
+        sizes: ['1000 ml'],
+        note: 'Crate: 12 Litre',
       },
       {
-        name: 'Family Pack',
-        sizes: ['700 ml'],
-        note: 'Vanilla · Pista · Strawberry · Mango · Butter Scotch · Tender Coconut',
+        name: 'Pasteurized Buffalo Milk',
+        sizes: ['450 ml'],
+        note: 'Crate: 11.70 Litre',
       },
       {
-        name: 'Family Pack',
-        sizes: ['1250 ml'],
-        note: 'Vanilla · Pista · Strawberry · Mango · Butter Scotch · Tender Coconut',
+        name: 'Toned Milk Healthy',
+        sizes: ['150 ml'],
+        note: 'Crate: 12 Litre',
       },
       {
-        name: 'Premium Family Pack',
-        sizes: ['700+700 ml (Buy 1 Get 1)'],
-        note: 'Fruit Sitafal · Anjir · Tutty Fruity · Kaju Draksh · Peru · Rajbhog · American Nut',
+        name: 'Toned Milk Fresh',
+        sizes: ['500 ml'],
+        note: 'Crate: 12 Litre',
       },
       {
-        name: 'Basundi',
-        sizes: ['Tub'],
-        note: 'Flavored Basundi',
+        name: 'Toned Milk Healthy',
+        sizes: ['200 ml'],
+        note: 'Crate: 12 Litre',
       },
       {
-        name: 'Curd',
-        sizes: ['1 kg Tub'],
-        note: 'Fresh & Thick Taza Dahi',
+        name: 'Toned Milk Healthy 3.0',
+        sizes: ['500 ml'],
+        note: 'Crate: 12 Litre',
       },
+      {
+        name: 'Std Milk Shudha 4.5',
+        sizes: ['500 ml'],
+        note: 'Crate: 12 Litre',
+      },
+      {
+        name: 'Full Cream Milk Amrut',
+        sizes: ['500 ml'],
+        note: 'Crate: 12 Litre',
+      },
+      {
+        name: 'Toned Milk Healthy 3.5',
+        sizes: ['1000 ml'],
+        note: 'Crate: 12 Litre',
+      },
+      {
+        name: 'Toned Milk Healthy 3.5',
+        sizes: ['500 ml'],
+        note: 'Crate: 12 Litre',
+      },
+      {
+        name: 'Toned Milk Satvik 1.5 Fat',
+        sizes: ['200 ml'],
+        note: 'Crate: 12 Litre',
+      },
+      {
+        name: 'Toned Milk Satvik 1.5 Fat',
+        sizes: ['500 ml'],
+        note: 'Crate: 12 Litre',
+      },
+
+      /* ── BI-PRODUCT ORDER ── */
+      { name: 'Bi-Product Order', divider: true },
+
+      /* Amrakhand */
+      { name: 'Amrakhand', sizes: ['250 gm'], note: 'Box: 6 KG' },
+      { name: 'Amrakhand', sizes: ['100 gm'], note: 'Box: 4 KG' },
+      { name: 'Amrakhand', sizes: ['450 gm'], note: 'Box: 5.4 KG' },
+      { name: 'Amrakhand Bulk Pack', sizes: ['10 KG'], note: 'Bulk' },
+
+      /* Basundi */
+      { name: 'Basundi', sizes: ['500 gm'], note: 'Box: 2 KG' },
+      { name: 'Basundi', sizes: ['250 gm'], note: 'Box: 2 KG' },
+      { name: 'Basundi', sizes: ['100 gm'], note: 'Box: 2 KG' },
+
+      /* Dahi */
+      { name: 'Dahi', sizes: ['500 gm'], note: 'Crate: 12 KG' },
+      { name: 'Dahi', sizes: ['200 gm'], note: 'Crate: 12 KG' },
+      { name: 'Dahi', sizes: ['1000 gm'], note: 'Crate: 12 KG' },
+      { name: 'Bucket Dahi', sizes: ['5 KG'], note: 'Bulk' },
+
+      /* Ghee – CM */
+      { name: 'Ghee (CM)', sizes: ['100 ml'], note: 'Box: 6 Litre' },
+      { name: 'Ghee (CM)', sizes: ['200 ml'], note: 'Box: 6 Litre' },
+      { name: 'Ghee (CM)', sizes: ['500 ml'], note: 'Box: 6 Litre' },
+      { name: 'Ghee (CM)', sizes: ['1000 ml'], note: 'Box: 6 Litre' },
+      { name: 'Ghee CM – 5 Litre Jar', sizes: ['5 Litre'], note: 'Jar' },
+      { name: 'Ghee CM – Tin', sizes: ['15 KG'], note: 'Tin' },
+
+      /* Ghee – BM */
+      { name: 'Ghee (BM)', sizes: ['200 ml'], note: 'Box: 6 Litre' },
+      { name: 'Ghee (BM)', sizes: ['500 ml'], note: 'Box: 6 Litre' },
+      { name: 'Ghee (BM)', sizes: ['1000 ml'], note: 'Box: 6 Litre' },
+      { name: 'Ghee BM – 5 Litre Jar', sizes: ['5 Litre'], note: 'Jar' },
+      { name: 'Ghee BM – Tin', sizes: ['15 KG'], note: 'Tin' },
+
+      /* Desi Cow Ghee */
+      { name: 'Desi Cow Ghee', sizes: ['200 ml'], note: 'Box: 6 Litre' },
+      { name: 'Desi Cow Ghee', sizes: ['500 ml'], note: 'Box: 6 Litre' },
+      { name: 'Desi Cow Ghee', sizes: ['1000 ml'], note: 'Box: 6 Litre' },
+      { name: 'Desi Cow Ghee – Tin', sizes: ['15 KG'], note: 'Tin' },
+
+      /* Khava */
+      { name: 'Khava', sizes: ['10 KG'], note: 'Bulk' },
+      { name: 'Cow Milk Khava', sizes: ['10 KG'], note: 'Bulk' },
+
+      /* Lassi */
+      { name: 'Vanilla Lassi Cup', sizes: ['200 ml'], note: 'Box: 4 Litre' },
+      { name: 'Rose Lassi Cup', sizes: ['200 ml'], note: 'Box: 4 Litre' },
+      { name: 'Mango Lassi Cup', sizes: ['200 ml'], note: 'Box: 4 Litre' },
+      { name: 'Guava Lassi Cup', sizes: ['200 ml'], note: 'Box: 4 Litre' },
+      { name: 'Thandai Lassi', sizes: ['12 Litre'], note: 'Bag' },
+
+      /* Paneer */
+      { name: 'Paneer', sizes: ['500 gm'], note: 'Box: 4 KG' },
+      { name: 'Malai Paneer', sizes: ['200 gm'], note: 'Box: 4 KG' },
+      { name: 'Malai Paneer', sizes: ['100 gm'], note: 'Box: 4 KG' },
+      { name: 'Fresh Paneer Pack', sizes: ['1 KG'], note: 'Bulk' },
+      { name: 'Fresh Paneer Pack', sizes: ['5 KG'], note: 'Bulk' },
+
+      /* Pedha */
+      { name: 'Pedha 500 gm', sizes: ['1 KG Box'], note: 'Box: 1 KG' },
+      { name: 'Pedha 250 gm', sizes: ['1 KG Box'], note: 'Box: 1 KG' },
+
+      /* Shrikhand */
+      { name: 'Shrikhand', sizes: ['50 gm'], note: 'Box: 4 KG' },
+      { name: 'Shrikhand', sizes: ['100 gm'], note: 'Box: 4 KG' },
+      { name: 'Shrikhand', sizes: ['250 gm'], note: 'Box: 6 KG' },
+      { name: 'Shrikhand', sizes: ['450 gm'], note: 'Box: 5.4 KG' },
+      { name: 'Shrikhand Bulk Pack', sizes: ['10 KG'], note: 'Bulk' },
+
+      /* Flavoured Milk */
+      { name: 'Strawberry Flavour Milk', sizes: ['180 ml'], note: 'Box: 4.32 Litre' },
+      { name: 'Pista Flavour Milk', sizes: ['180 ml'], note: 'Box: 4.32 Litre' },
+      { name: 'Chocolate Flavour Milk', sizes: ['180 ml'], note: 'Box: 4.32 Litre' },
+      { name: 'Butterscotch Flavour Milk', sizes: ['180 ml'], note: 'Box: 4.32 Litre' },
+      { name: 'Badam Flavour Milk', sizes: ['180 ml'], note: 'Box: 4.32 Litre' },
+
+      /* Tak (Buttermilk) */
+      { name: 'Tak', sizes: ['200 ml'], note: 'Bag: 12 Litre' },
+      { name: 'Masala Tak', sizes: ['200 ml'], note: 'Bag: 12 Litre' },
+      { name: 'Natural Tak', sizes: ['500 ml'], note: 'Crate: 12 Litre' },
+
+      /* Gulab Jamun */
+      { name: 'Gulab Jamun – Tin Pack', sizes: ['500 gm'], note: 'Box: 4 KG' },
+      { name: 'Gulab Jamun – Tin Pack', sizes: ['1000 gm'], note: 'Box: 4 KG' },
     ],
   },
 
@@ -272,6 +423,37 @@ export const COLD_DRINK_BRANDS = [
         name: 'Bulk Pack',
         sizes: ['4000 ml'],
         note: 'Vanilla · Strawberry · Pista · Mango · Butter Scotch · Chocolate & more',
+      },
+      /* — Dairy Natural ice cream range (transferred) — */
+      {
+        name: 'Large Cup',
+        sizes: ['65 ml'],
+        note: 'Vanilla · Pista · Strawberry · Mango · Butter Scotch · Tender Coconut',
+      },
+      {
+        name: 'King Cone',
+        sizes: ['110 ml'],
+        note: 'Choco Vanilla · Butterscotch · Belgium Chocolate · Dry Fruit Nutty Cone',
+      },
+      {
+        name: 'Chocobar',
+        sizes: ['60 ml'],
+        note: 'Choco-Crunchi',
+      },
+      {
+        name: 'Family Pack',
+        sizes: ['700 ml'],
+        note: 'Vanilla · Pista · Strawberry · Mango · Butter Scotch · Tender Coconut',
+      },
+      {
+        name: 'Family Pack',
+        sizes: ['1250 ml'],
+        note: 'Vanilla · Pista · Strawberry · Mango · Butter Scotch · Tender Coconut',
+      },
+      {
+        name: 'Premium Family Pack',
+        sizes: ['700+700 ml (Buy 1 Get 1)'],
+        note: 'Fruit Sitafal · Anjir · Tutty Fruity · Kaju Draksh · Peru · Rajbhog · American Nut',
       },
     ],
   },
